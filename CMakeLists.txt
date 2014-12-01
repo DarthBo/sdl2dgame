@@ -18,6 +18,7 @@ include_directories(${SDL2_INCLUDE_DIR})
 
 # source files
 set(SRC src/main.cpp
+        src/sdl++.cpp
 )
 
 # make bin
