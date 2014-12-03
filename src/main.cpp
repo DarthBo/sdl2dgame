@@ -1,15 +1,22 @@
 #include <iostream>
 #include "sdl++.h"
 
+using namespace sdl;
 
 int main(int argc, char **argv) {
 
     try {
         SDL sdl(SDL_INIT_VIDEO|SDL_INIT_TIMER);
-
-        /* ... */
-        std::cout << "base path: " << sdl.GetPath() << std::endl;
-
+        
+        Window win("Hello world", 640, 480);
+        Texture tex(sdl.GetPath("res") + "kerst.png", win);
+        
+        win.Clear();
+        win.CopyTexture(tex);
+        win.Present();
+        
+        SDL_Delay(2000);
+        
         return 0;
     }
 
