@@ -1,8 +1,17 @@
+#pragma once
+
 #include <exception>
 #include <string>
 #include "SDL.h"
 
-class InitError: public std::exception {
+#ifdef _WIN32
+    const char PATH_SEP = '\\';
+#else
+    const char PATH_SEP = '/';
+#endif
+
+class InitError: public std::exception
+{
     public:
         InitError();
         InitError(const std::string&);
@@ -13,7 +22,8 @@ class InitError: public std::exception {
 };
 
 
-class SDL {
+class SDL
+{
     public:
         SDL(Uint32 flags = 0) throw(InitError);
         virtual ~SDL();
@@ -22,4 +32,9 @@ class SDL {
     private:
         std::string base_path;
         //const std::string pref_path;
+};
+
+class Window
+{
+
 };

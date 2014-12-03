@@ -1,7 +1,9 @@
 #include <iostream>
 #include "sdl++.h"
 
+
 int main(int argc, char **argv) {
+
     try {
         SDL sdl(SDL_INIT_VIDEO|SDL_INIT_TIMER);
 

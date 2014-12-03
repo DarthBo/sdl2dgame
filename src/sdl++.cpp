@@ -20,8 +20,12 @@ SDL::SDL(Uint32 flags) throw(InitError) {
     if (bp) {
         base_path = bp; //copy
         SDL_free(bp);
+
+        //save parent directory
+        size_t pos = base_path.rfind("bin");
+        base_path.resize(pos);
     } else {
-        base_path = "./";
+        base_path = "";
     }
 }
 
