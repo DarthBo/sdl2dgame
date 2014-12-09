@@ -21,8 +21,6 @@ include_directories(${SDL2_IMAGE_INCLUDE_DIR})
 # source files
 set(SRC src/main.cpp
         src/sdl++.cpp
-	src/sdl++.h
-        src/cleanup.h
 )
 
 # make bin
