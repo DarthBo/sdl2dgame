@@ -2,6 +2,7 @@
 
 #include <exception>
 #include <string>
+#include <iostream>
 #include "SDL.h"
 
 #ifdef _WIN32
@@ -20,7 +21,8 @@ const char PATH_SEP = '/';
 
 namespace sdl
 {
-    
+    void logSDLError(const std::string &msg, std::ostream &os = std::cerr);
+
     class InitError: public std::exception
     {
     public:
@@ -54,12 +56,15 @@ namespace sdl
         friend class Texture;
     public:
         Window(const std::string &title, int w, int h, Uint32 flags = SDL_WINDOW_SHOWN) throw(InitError);
-        ~Window();
+        virtual ~Window();
         
         void Clear();
-        int CopyTexture (const Texture &texture,
-                         const SDL_Rect* srcrect = nullptr,
-                         const SDL_Rect* dstrect = nullptr);
+        /*
+        void CopyTexture(const Texture &texture,
+                         const SDL_Rect* srcrect,
+                         const SDL_Rect* dstrect);*/
+        void CopyTexture (const Texture &texture, int x=0, int y=0);
+        void CopyTexture (const Texture &texture, int x, int y, int w, int h);
         void Present();
         
     private:
@@ -71,10 +76,9 @@ namespace sdl
     {
         friend class Window;
     public:
-        Texture(const std::string &file, const Window &window) throw(InitError);
-        ~Texture();
+        Texture(const std::string &file, const Window &window);
+        virtual ~Texture();
         void QueryDimensions(int *width, int *height) const;
-        void Render(int x, int y) const;
     private:
         SDL_Texture *tex;
     };

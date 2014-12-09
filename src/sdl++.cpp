@@ -2,6 +2,12 @@
 
 using namespace sdl;
 
+
+void sdl::logSDLError(const std::string &msg, std::ostream &os)
+{
+    os << msg << " SDL error: " << SDL_GetError() << std::endl;
+}
+
 /**** InitError ****/
 
 InitError::InitError(): exception(), msg(SDL_GetError()) {}
@@ -10,7 +16,6 @@ InitError::~InitError() throw() {}
 const char* InitError::what() const throw() {
     return msg.c_str();
 }
-
 
 /**** SDL ****/
 
@@ -64,6 +69,9 @@ Window::Window(const std::string &title, int w, int h, Uint32 flags) throw(InitE
     ren = SDL_CreateRenderer(win, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
     if (ren == nullptr)
         throw InitError();
+
+    SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "linear");  // make the scaled rendering look smoother.
+    SDL_RenderSetLogicalSize(ren, w, h);
 }
 
 Window::~Window()
@@ -79,10 +87,35 @@ void Window::Clear()
     SDL_RenderClear(ren);
 }
 
-int Window::CopyTexture(const Texture &texture, const SDL_Rect* srcrect,
+/*
+void Window::CopyTexture (const Texture &texture, const SDL_Rect* srcrect,
                                                 const SDL_Rect* dstrect)
 {
-    return SDL_RenderCopy(ren, texture.tex, srcrect, dstrect);
+    if (SDL_RenderCopy(ren, texture.tex, srcrect, dstrect) < 0)
+        logSDLError("Window::CopyTexture");
+}*/
+
+void Window::CopyTexture (const Texture &texture, int x, int y)
+{
+    SDL_Rect rect;
+    rect.x = x;
+    rect.y = y;
+    texture.QueryDimensions(&(rect.w),&(rect.h));
+
+    if (SDL_RenderCopy(ren, texture.tex, nullptr, &rect) < 0)
+        logSDLError("Window::CopyTexture");
+}
+
+void Window::CopyTexture (const Texture &texture, int x, int y, int w, int h)
+{
+    SDL_Rect rect;
+    rect.x = x;
+    rect.y = y;
+    rect.w = w;
+    rect.h = h;
+
+    if (SDL_RenderCopy(ren, texture.tex, nullptr, &rect) < 0)
+        logSDLError("Window::CopyTexture");
 }
 
 void Window::Present()
@@ -92,9 +125,11 @@ void Window::Present()
 
 /**** Texture ****/
 
-Texture::Texture(const std::string &file, const Window &window) throw(InitError)
+Texture::Texture(const std::string &file, const Window &window)
 {
     tex = IMG_LoadTexture(window.ren, file.c_str());
+    if (tex == nullptr)
+        logSDLError("Texture constr");
 }
 
 Texture::~Texture()

@@ -3,19 +3,37 @@
 
 using namespace sdl;
 
+
+const int SCREEN_WIDTH  = 640;
+const int SCREEN_HEIGHT = 480;
+
 int main(int argc, char **argv) {
 
     try {
         SDL sdl(SDL_INIT_VIDEO|SDL_INIT_TIMER);
         
-        Window win("Hello world", 640, 480);
+        Window win("Hello world", SCREEN_WIDTH, SCREEN_HEIGHT);
         Texture tex(sdl.GetPath("res") + "kerst.png", win);
-        
-        win.Clear();
-        win.CopyTexture(tex);
-        win.Present();
-        
-        SDL_Delay(2000);
+
+        SDL_Event e;
+        bool quit = false;
+        while (!quit){
+            while (SDL_PollEvent(&e)){
+                if (e.type == SDL_QUIT){
+                    quit = true;
+                }
+                if (e.type == SDL_KEYDOWN){
+                    quit = true;
+                }
+                if (e.type == SDL_MOUSEBUTTONDOWN){
+                    quit = true;
+                }
+            }
+            //Render the scene
+            win.Clear();
+            win.CopyTexture(tex);
+            win.Present();
+        }
         
         return 0;
     }
