@@ -125,11 +125,13 @@ void Window::Present()
 
 /**** Texture ****/
 
-Texture::Texture(const std::string &file, const Window &window)
+Texture::Texture(const std::string &file, const Window &window, bool enableAlpha)
 {
     tex = IMG_LoadTexture(window.ren, file.c_str());
     if (tex == nullptr)
         logSDLError("Texture constr");
+    else if (enableAlpha)
+        SDL_SetTextureBlendMode(tex, SDL_BLENDMODE_BLEND);
 }
 
 Texture::~Texture()
@@ -141,4 +143,14 @@ Texture::~Texture()
 void Texture::QueryDimensions(int *width, int *height) const
 {
     SDL_QueryTexture(tex, NULL, NULL, width, height);
+}
+
+void Texture::ModulateColor(Uint8 red, Uint8 green, Uint8 blue)
+{
+    SDL_SetTextureColorMod(tex, red, green, blue);
+}
+
+void Texture::SetOpacity(Uint8 opacity)
+{
+    SDL_SetTextureAlphaMod(tex, opacity);
 }

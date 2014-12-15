@@ -1,48 +1,19 @@
 #include <iostream>
-#include "sdl++.h"
+#include <map>
+#include "game.h"
 
-using namespace sdl;
-
-
-const int SCREEN_WIDTH  = 640;
-const int SCREEN_HEIGHT = 480;
-
-int main(int argc, char **argv) {
+int main() {
 
     try {
-        SDL sdl(SDL_INIT_VIDEO|SDL_INIT_TIMER);
-        
-        Window win("Hello world", SCREEN_WIDTH, SCREEN_HEIGHT);
-        Texture tex(sdl.GetPath("res") + "kerst.png", win);
+        Game g("testje");
 
-        SDL_Event e;
-        bool quit = false;
-        while (!quit){
-            while (SDL_PollEvent(&e)){
-                if (e.type == SDL_QUIT){
-                    quit = true;
-                }
-                if (e.type == SDL_KEYDOWN){
-                    quit = true;
-                }
-                if (e.type == SDL_MOUSEBUTTONDOWN){
-                    quit = true;
-                }
-            }
-            //Render the scene
-            win.Clear();
-            win.CopyTexture(tex);
-            win.Present();
-        }
-        
-        return 0;
+        g.Start();
     }
-
-    catch (const InitError& err) {
+    catch (const sdl::InitError& err) {
         std::cerr
             << "Error while initializing SDL:  "
             << err.what() << std::endl;
     }
 
-    return 1;
+    return 0;
 }

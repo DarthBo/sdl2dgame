@@ -76,12 +76,18 @@ namespace sdl
     {
         friend class Window;
     public:
-        Texture(const std::string &file, const Window &window);
+        Texture(const std::string &file, const Window &window, bool enableAlpha = false);
         virtual ~Texture();
         void QueryDimensions(int *width, int *height) const;
+        void ModulateColor(Uint8 red, Uint8 green, Uint8 blue);
+        void SetOpacity(Uint8 opacity);
     private:
         SDL_Texture *tex;
     };
     
+    class Event
+    {
+
+    };
     
 }

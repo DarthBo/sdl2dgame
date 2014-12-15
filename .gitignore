@@ -24,9 +24,12 @@
 .DS_Store
 *~
 
-# cmake binaries 
+# cmake stuff 
 build/
 bin/
+CMakeLists.txt.user
+qtbuild/
+xcode/
 
 # qtcreator
 *.json
