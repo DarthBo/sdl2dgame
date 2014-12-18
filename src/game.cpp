@@ -3,11 +3,13 @@
 using namespace sdl;
 
 static const int VEL = 5;
+static const int JMP = 15;
+static const int FLOOR = 300;
 
 int Game::Start()
 {
     Texture bg(sdl.GetPath("res") + "bg.png", win);
-    Player player(sdl.GetPath("res") + "front.png", win, 320, 300);
+    Player player(sdl.GetPath("res") + "front.png", win, 320, FLOOR);
     player.ModulateColor(255, 0, 0);
 
     SDL_Event e;
@@ -26,23 +28,24 @@ int Game::Start()
                 {
                     case SDL_SCANCODE_LEFT:
                     case SDL_SCANCODE_A:
-                        //goleft
+                        //go left
                         player.velX -= VEL;
                         break;
                     case SDL_SCANCODE_RIGHT:
                     case SDL_SCANCODE_D:
-                        //goright
+                        //go right
                         player.velX += VEL;
                         break;
                     case SDL_SCANCODE_UP:
                     case SDL_SCANCODE_W:
-                        //goup
-                        player.velY -= VEL;
+                        //go up
+                        if (player.velY == 0) //todo replace with if onground
+                            player.velY -= JMP;
                         break;
                     case SDL_SCANCODE_DOWN:
                     case SDL_SCANCODE_S:
-                        //godown
-                        player.velY += VEL;
+                        //go down
+                        //player.velY += VEL;
                         break;
                     case SDL_SCANCODE_ESCAPE:
                         //escape
@@ -58,23 +61,23 @@ int Game::Start()
                 {
                     case SDL_SCANCODE_LEFT:
                     case SDL_SCANCODE_A:
-                        //goleft
+                        //go left
                         player.velX += VEL;
                         break;
                     case SDL_SCANCODE_RIGHT:
                     case SDL_SCANCODE_D:
-                        //goright
+                        //go right
                         player.velX -= VEL;
                         break;
                     case SDL_SCANCODE_UP:
                     case SDL_SCANCODE_W:
-                        //goup
-                        player.velY += VEL;
+                        //go up
+                        //player.velY += VEL;
                         break;
                     case SDL_SCANCODE_DOWN:
                     case SDL_SCANCODE_S:
-                        //godown
-                        player.velY -= VEL;
+                        //go down
+                        //player.velY -= VEL;
                         break;
                     default:
                         break;
@@ -85,6 +88,7 @@ int Game::Start()
                 quit = true;
             }
         }
+
         //Calculate position
         int pMidX, pMidY;
         player.QueryDimensions(&pMidX, &pMidY);
@@ -101,6 +105,17 @@ int Game::Start()
             player.posY = SCREEN_HEIGHT - pMidY;
         else if (player.posY + pMidY > SCREEN_HEIGHT)
             player.posY = -pMidY;
+
+        //gravity
+        if (player.posY < FLOOR)
+            player.velY += 1;
+
+        //hardcoded floor
+        if (player.posY > FLOOR)
+        {
+            player.posY = FLOOR;
+            player.velY = 0;
+        }
 
         //Render the scene
         win.Clear();
