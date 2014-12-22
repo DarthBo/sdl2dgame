@@ -69,9 +69,6 @@ Window::Window(const std::string &title, int w, int h, Uint32 flags) throw(InitE
     ren = SDL_CreateRenderer(win, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
     if (ren == nullptr)
         throw InitError();
-
-    SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "linear");  // make the scaled rendering look smoother.
-    SDL_RenderSetLogicalSize(ren, w, h);
 }
 
 Window::~Window()
@@ -85,6 +82,24 @@ Window::~Window()
 void Window::Clear()
 {
     SDL_RenderClear(ren);
+}
+
+void Window::SetInternalResolution(int w, int h)
+{
+    SDL_RenderSetLogicalSize(ren, w, h);
+}
+
+void Window::SetDrawColour(Uint8 r, Uint8 g, Uint8 b, Uint8 a)
+{
+    SDL_SetRenderDrawColor(ren, r, g, b, a);
+}
+
+void Window::EnableLinearScaling(bool enable)
+{
+    if (enable)
+        SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "linear");  // make the scaled rendering look smoother.
+    else
+        SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "nearest");
 }
 
 /*

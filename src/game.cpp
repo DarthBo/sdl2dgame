@@ -2,15 +2,38 @@
 
 using namespace sdl;
 
-static const int VEL = 5;
-static const int JMP = 15;
-static const int FLOOR = 300;
+const int SCREEN_WIDTH  = 720;
+const int SCREEN_HEIGHT = 480;
+static const int VEL = 4;
+static const int JMP = 12;
+static const int FLOOR = 256;
+
+static const Uint8 level[10][15] = {
+    {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
+    {1,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
+    {1,0,0,0,0,0,0,0,1,1,1,1,0,0,1},
+    {1,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
+    {1,0,0,0,1,1,1,0,0,0,0,0,0,0,1},
+    {1,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
+    {1,0,0,0,0,0,0,1,1,1,1,1,0,0,1},
+    {1,0,1,1,1,0,0,0,0,0,0,0,0,0,1},
+    {1,0,0,0,0,0,2,0,0,0,0,0,0,0,1},
+    {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1}
+};
+
+Game::Game(const std::string &title) : sdl(SDL_INIT_VIDEO|SDL_INIT_TIMER),
+                                 win(title, SCREEN_WIDTH, SCREEN_HEIGHT)
+{
+    win.SetInternalResolution(480,320);
+    win.SetDrawColour(100,75,25);
+}
 
 int Game::Start()
 {
-    Texture bg(sdl.GetPath("res") + "bg.png", win);
-    Player player(sdl.GetPath("res") + "front.png", win, 320, FLOOR);
-    player.ModulateColor(255, 0, 0);
+    //Texture bg(sdl.GetPath("res") + "bg.png", win);
+    Texture tile(sdl.GetPath("res") + "tile.png", win);
+    Player player(sdl.GetPath("res") + "char.png", win, 200, FLOOR);
+
 
     //Calculate player center
     int pMidX, pMidY;
@@ -32,61 +55,62 @@ int Game::Start()
             {
                 switch (e.key.keysym.scancode)
                 {
-                    case SDL_SCANCODE_LEFT:
-                    case SDL_SCANCODE_A:
-                        //go left
-                        player.isLeft = true;
-                        break;
-                    case SDL_SCANCODE_RIGHT:
-                    case SDL_SCANCODE_D:
-                        //go right
-                        player.isRight = true;
-                        break;
-                    case SDL_SCANCODE_UP:
-                    case SDL_SCANCODE_W:
-                        //go up
-                        if (!player.isFalling & !player.isJumping)
-                            player.isJumping = true;
-                        break;
-                    case SDL_SCANCODE_DOWN:
-                    case SDL_SCANCODE_S:
-                        //go down
-                        //player.velY += VEL;
-                        break;
-                    case SDL_SCANCODE_ESCAPE:
-                        //escape
-                        quit = true;
-                        break;
-                    default:
-                        break;
+                case SDL_SCANCODE_LEFT:
+                case SDL_SCANCODE_A:
+                    //go left
+                    player.isLeft = true;
+                    break;
+                case SDL_SCANCODE_RIGHT:
+                case SDL_SCANCODE_D:
+                    //go right
+                    player.isRight = true;
+                    break;
+                case SDL_SCANCODE_UP:
+                case SDL_SCANCODE_W:
+                case SDL_SCANCODE_SPACE:
+                    //go up
+                    if (!player.isFalling & !player.isJumping)
+                        player.isJumping = true;
+                    break;
+                case SDL_SCANCODE_DOWN:
+                case SDL_SCANCODE_S:
+                    //go down
+                    //player.velY += VEL;
+                    break;
+                case SDL_SCANCODE_ESCAPE:
+                    //escape
+                    quit = true;
+                    break;
+                default:
+                    break;
                 }
             }
             else if (e.type == SDL_KEYUP)
             {
                 switch (e.key.keysym.scancode)
                 {
-                    case SDL_SCANCODE_LEFT:
-                    case SDL_SCANCODE_A:
-                        //go left
-                        player.isLeft = false;
-                        break;
-                    case SDL_SCANCODE_RIGHT:
-                    case SDL_SCANCODE_D:
-                        //go right
-                        player.isRight = false;
-                        break;
-                    case SDL_SCANCODE_UP:
-                    case SDL_SCANCODE_W:
-                        //go up
-                        //player.velY += VEL;
-                        break;
-                    case SDL_SCANCODE_DOWN:
-                    case SDL_SCANCODE_S:
-                        //go down
-                        //player.velY -= VEL;
-                        break;
-                    default:
-                        break;
+                case SDL_SCANCODE_LEFT:
+                case SDL_SCANCODE_A:
+                    //go left
+                    player.isLeft = false;
+                    break;
+                case SDL_SCANCODE_RIGHT:
+                case SDL_SCANCODE_D:
+                    //go right
+                    player.isRight = false;
+                    break;
+                case SDL_SCANCODE_UP:
+                case SDL_SCANCODE_W:
+                    //go up
+                    //player.velY += VEL;
+                    break;
+                case SDL_SCANCODE_DOWN:
+                case SDL_SCANCODE_S:
+                    //go down
+                    //player.velY -= VEL;
+                    break;
+                default:
+                    break;
                 }
             }
             if (e.type == SDL_MOUSEBUTTONDOWN)
@@ -126,16 +150,24 @@ int Game::Start()
             player.velY += 1;
 
         //hardcoded floor
-        if (player.posY > FLOOR)
+        if (player.posY >= FLOOR)
         {
+            player.isFalling = false;
             player.posY = FLOOR;
             player.velY = 0;
-            player.isFalling = false;
         }
 
         //Render the scene
         win.Clear();
-        win.CopyTexture(bg);
+        //win.CopyTexture(bg);
+        for (int y=0; y<10; y++)
+        {
+            for (int x=0; x<15; x++)
+            {
+                if (level[y][x] == 1)
+                    win.CopyTexture(tile, x*32, y*32);
+            }
+        }
         win.CopyTexture(player, player.posX, player.posY);
         win.Present();
     }

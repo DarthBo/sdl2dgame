@@ -1,13 +1,9 @@
 #include "sdl++.h"
 
-const int SCREEN_WIDTH  = 640;
-const int SCREEN_HEIGHT = 480;
-
 class Game
 {
 public:
-    Game(const std::string &title) : sdl(SDL_INIT_VIDEO|SDL_INIT_TIMER),
-                                     win(title, SCREEN_WIDTH, SCREEN_HEIGHT) {}
+    Game(const std::string &title);
     ~Game() {}
     int Start();
 private:

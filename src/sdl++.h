@@ -59,6 +59,10 @@ namespace sdl
         virtual ~Window();
         
         void Clear();
+        void SetInternalResolution(int w, int h);
+        void SetDrawColour(Uint8 r, Uint8 g, Uint8 b, Uint8 a = SDL_ALPHA_OPAQUE);
+        void EnableLinearScaling(bool enable);
+
         /*
         void CopyTexture(const Texture &texture,
                          const SDL_Rect* srcrect,
